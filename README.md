@@ -1,2 +1,0 @@
-# wedding-trivia
-Something interesting
