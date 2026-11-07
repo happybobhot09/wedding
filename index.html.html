@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>柏翰 & Lulu 婚禮快問快答暖身題庫</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel Standalone for JSX compilation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .font-serif-tc {
+            font-family: 'Noto Serif TC', 'Songti TC', serif;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(4deg); }
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-float {
+            animation: floatSlow 5s ease-in-out infinite;
+        }
+        .animate-slide-up {
+            animation: slideUpFade 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-[#FAF7F2] text-[#2C2523] font-sans antialiased selection:bg-[#D4A373]/30">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // ==========================================
+        // SVG Icons 集合 (確保 GitHub Pages 靜態環境免外部依賴)
+        // ==========================================
+        const Icon = {
+            Heart: ({ className = "w-5 h-5", fill = "none" }) => (
+                <svg className={className} fill={fill} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+            ),
+            Plane: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+            ),
+            GlassWater: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.573 5.505A2.25 2.25 0 0116.059 22.5H7.941a2.25 2.25 0 01-2.168-1.695L4.2 15.3m15.6 0H4.2" /></svg>
+            ),
+            Flame: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>
+            ),
+            Sparkles: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+            ),
+            ChevronRight: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            ),
+            ChevronLeft: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            ),
+            CheckCircle2: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            ),
+            XCircle: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            ),
+            Trophy: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.17M9.497 14.25a7.454 7.454 0 00.982-3.17m-5.98 3.17h1.002m13.012 0h-1.002M12 2.25a4.5 4.5 0 00-4.5 4.5v2.25h9V6.75a4.5 4.5 0 00-4.5-4.5z" /></svg>
+            ),
+            RotateCcw: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+            ),
+            Home: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+            ),
+            Settings: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.332.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            ),
+            Plus: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+            ),
+            Trash2: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+            ),
+            Edit3: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+            ),
+            Save: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+            ),
+            Award: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+            ),
+            Volume2: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396.235-.847 1.058-1.354 1.938-1.354h2.242z" /></svg>
+            ),
+            VolumeX: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396.235-.847 1.058-1.354 1.938-1.354h2.242z" /></svg>
+            ),
+            Check: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+            ),
+            RefreshCw: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+            )
+        };
+
+        const DEFAULT_QUESTIONS = [
+            {
+                id: 'us-1',
+                category: 'us',
+                tag: '必考送分題',
+                question: '今天是柏翰與 Lulu 的大喜之日，請問我們的「婚禮紀念日」是哪一天？',
+                options: ['2026 年 11 月 22 日', '2026 年 10 月 10 日', '2026 年 12 月 25 日', '2026 年 05 月 20 日'],
+                correctIndex: 0,
+                explanation: '沒錯！就是今天 2026/11/22（好成雙的好日子 💕）！趕快把這串神聖數字記在心裡，待會中場主持人正式快問快答很可能會考喔！'
+            },
+            {
+                id: 'us-2',
+                category: 'us',
+                tag: '新郎機密',
+                question: '新郎柏翰平時除了疼愛老婆 Lulu 之外，最熱衷研究的「燒腦興趣」是什麼？',
+                options: ['量化交易寫 Python 選股與名錶研究', '烘焙法式馬卡龍與甜點裝飾', '極限高空跳傘與深海衝浪', '古董字畫與紫砂壺鑑賞'],
+                correctIndex: 0,
+                explanation: '標準理工浪漫男！柏翰平時最愛寫 Python 跑量化交易策略抓飆股，還有研究機械名錶工藝（當然，賺來的錢跟時間都優先留給 Lulu ✨）。'
+            },
+            {
+                id: 'us-3',
+                category: 'us',
+                tag: '約會神隊友',
+                question: '平常兩人出門兜風約會時，負責載著 Lulu 到處趴趴走的「愛車小夥伴」是哪一台？',
+                options: ['Volvo XC40', '粉紅敞篷雙人協力車', '皇家黃金南瓜馬車', '拓海的 AE86 送豆腐專車'],
+                correctIndex: 0,
+                explanation: '答案是來自北歐、安全感滿滿的 Volvo XC40！載著最心愛的老婆出遊，安全與舒適絕對是柏翰的第一考量 🚗💨。'
+            },
+            {
+                id: 'us-4',
+                category: 'us',
+                tag: '親友交誼',
+                question: '逢年過節或好友聚會時，新人最喜歡跟親友切磋哪一項「國粹桌遊」來聯絡感情？',
+                options: ['麻將摸兩圈', '遊戲王卡決鬥', '世紀帝國連線對戰', '西洋棋大師賽'],
+                correctIndex: 0,
+                explanation: '國粹麻將摸兩圈是一定要的 🀄！俗話說牌品好人品就好，不過溫馨提醒各位親友：今天新娘最大，待會有人喊胡牌記得先讓新娘胡！'
+            },
+            {
+                id: 'us-5',
+                category: 'us',
+                tag: '新郎手作',
+                question: '為了籌備這場婚禮，新郎柏翰甚至自己動手寫程式做了什麼神祕數位工具？',
+                options: ['婚禮桌次座位安排系統與這個快問快答網頁', '全自動 AI 敬酒機器人', '紅包袋厚度 X 光掃描儀', '賓客今日穿搭顏值偵測器'],
+                correctIndex: 0,
+                explanation: '沒錯！連安排大家今天坐哪一桌的「桌次規劃系統」還有你現在正在滑的「快問快答題庫」，都是新郎注入滿滿愛意親手打造出來的 💻❤️！'
+            },
+            {
+                id: 'travel-1',
+                category: 'travel',
+                tag: '近期足跡',
+                question: '今年（2026年）9月，柏翰與 Lulu 才剛去哪個陽光與海島度假勝地放鬆充電？',
+                options: ['日本沖繩 Okinawa', '韓國濟州島 Jeju', '泰國普吉島 Phuket', '美國夏威夷 Hawaii'],
+                correctIndex: 0,
+                explanation: '今年 9 月兩人剛去日本沖繩自駕看海、吃燒肉！蔚藍的古宇利島海景跟水族館，是婚禮前最棒的放鬆之旅 🌺🌊。'
+            },
+            {
+                id: 'travel-2',
+                category: 'travel',
+                tag: '閃光彈注意',
+                question: '2026年9月去台中度過浪漫週末時，柏翰在台中大遠百準備了什麼閃亮亮的驚喜送給 Lulu？',
+                options: ['Van Cleef & Arpels 梵克雅寶珠寶', '一年份台中太陽餅 VIP 兌換券', '五公升巨無霸珍珠奶茶', '純金打造的迷你麻將組'],
+                correctIndex: 0,
+                explanation: '請戴好墨鏡 😎！那趟台中行除了住李方艾美酒店，柏翰還特別帶 Lulu 去台中大遠百挑選了夢幻的 VCA 梵克雅寶幸運草珠寶，寵妻指數破表！'
+            },
+            {
+                id: 'travel-3',
+                category: 'travel',
+                tag: '戀愛地圖',
+                question: '2026年上半年，兩人的戀愛旅遊足跡還踏過了哪兩座魅力城市？',
+                options: ['上海與澳門', '北京與香港', '東京與大阪', '首爾與釜山'],
+                correctIndex: 0,
+                explanation: '今年 3 月兩人去了繁華的上海看外灘夜景，4 月又飛去澳門享受美食與奢華度假村，每一站都有滿分的甜蜜回憶 ✈️！'
+            },
+            {
+                id: 'travel-4',
+                category: 'travel',
+                tag: '蜜月預告 Pt.1',
+                question: '婚禮結束後，兩人預計在 2027 年 4 月展開夢幻蜜月之旅，第一站會先去哪裡住濱海灣金沙酒店、玩環球影城？',
+                options: ['新加坡 Singapore', '杜拜 Dubai', '洛杉磯 Los Angeles', '法國巴黎 Paris'],
+                correctIndex: 0,
+                explanation: '蜜月第一站就是花園城市「新加坡」🦁！兩人預計入住超人氣的濱海灣金沙酒店無邊際泳池，還要去聖淘沙環球影城大玩特玩！'
+            },
+            {
+                id: 'travel-5',
+                category: 'travel',
+                tag: '蜜月預告 Pt.2',
+                question: '蜜月旅行的重頭戲！離開新加坡後，柏翰與 Lulu 將飛往哪個浪漫國度入住「四晚水上屋」？',
+                options: ['馬爾地夫 Maldives', '大溪地 Tahiti', '帛琉 Palau', '希臘聖托里尼 Santorini'],
+                correctIndex: 0,
+                explanation: '一生必去的夢幻蜜月天花板——馬爾地夫 🏝️！他們將直接入住四晚絕美水上屋，一打開房門就能跳進蒂芬尼藍的大海看魚群！'
+            },
+            {
+                id: 'fun-1',
+                category: 'fun',
+                tag: '西方禮俗',
+                question: '西式婚禮中，新娘為什麼要戴「頭紗（Veil）」？最初的浪漫或趣味起源是什麼？',
+                options: ['象徵純潔，並幫新娘擋住壞運氣與嫉妒眼光', '戶外證婚防曬、防風吹亂髮型', '怕新郎太緊張在紅毯上認錯人', '早起化妝太累，方便偷偷打呵欠不被拍到'],
+                correctIndex: 0,
+                explanation: '古羅馬與歐洲傳統相信，新娘大喜之日太美太幸福，戴上頭紗可以隔絕邪靈與嫉妒的眼光；掀開頭紗則象徵兩人正式結為連理 👰‍♀️✨。'
+            },
+            {
+                id: 'fun-2',
+                category: 'fun',
+                tag: '浪漫傳說',
+                question: '為什麼結婚戒指傳統上要戴在「左手無名指」上？',
+                options: ['古羅馬人相信那裡有一條「愛之靜脈」直通心臟', '因為無名指關節最小，最不容易卡住戒指', '左手比較少拿筷子跟滑鼠，才不會磨損鑽石', '跟朋友猜拳出布的時候比較有氣勢'],
+                correctIndex: 0,
+                explanation: '古羅馬人稱左手無名指的血管為「Vena Amoris（愛之靜脈）」，相信它直接連通心臟，把婚戒戴在這裡代表兩顆心緊緊相連 💍❤️。'
+            },
+            {
+                id: 'fun-3',
+                category: 'fun',
+                tag: '趣味語源',
+                question: '英文中把蜜月稱為「Honeymoon」，為什麼跟「蜂蜜（Honey）」有關？',
+                options: ['古代習俗新婚第一個月每天喝蜂蜜酒，象徵甜蜜多子', '以前歐洲規定度蜜月一定要去參觀養蜂場', '提醒新郎婚後要像工蜂一樣勤勞做家事', '以前結婚時媒人婆會送一整桶野生蜂巢'],
+                correctIndex: 0,
+                explanation: '在古代北歐與歐洲習俗中，新婚夫妻在婚後的第一個月份（Moon）裡，每天都要喝由蜂蜜發酵製成的「蜂蜜酒（Mead）」，祝福生活甜甜蜜蜜 🍯🌙。'
+            },
+            {
+                id: 'fun-4',
+                category: 'fun',
+                tag: '台灣喜宴',
+                question: '台灣婚宴菜色常有「紅白小湯圓（花好月圓）」，裡面加花生粉除了好吃還代表什麼吉祥寓意？',
+                options: ['圓圓滿滿、早生貴子（好事發生）', '怕賓客前菜沒吃飽，先用糯米墊墊肚子', '讓主廚展現炸湯圓不爆開的深厚功力', '考驗同桌賓客用筷子夾圓形食物的默契'],
+                correctIndex: 0,
+                explanation: '紅白湯圓代表「花好月圓、團團圓圓」，而花生則取諧音「好事發生」與「早生貴子」，吃甜甜沾喜氣，祝福新人幸福美滿 🥣🌸！'
+            },
+            {
+                id: 'fun-5',
+                category: 'fun',
+                tag: '得獎攻略',
+                question: '待會婚禮中場「正式快問快答」開始時，怎樣才能大幅提高搶答拿大獎的機率？',
+                options: ['把這個暖身題庫全部刷滿 100 分，並確保手機網路順暢！', '站在椅子上用力揮舞紅包袋吸引主持人注意', '用炸湯圓賄賂隔壁桌的小朋友幫你按手機', '每隔三分鐘對著主桌大喊新郎最帥、新娘最美'],
+                correctIndex: 0,
+                explanation: '恭喜你掌握精髓了 🎉！雖然大喊新郎最帥、新娘最美會獲得新人燦爛的微笑，但把這 15 題刷熟才是待會秒殺全場、抱走大獎的終極秘訣！'
+            }
+        ];
+
+        const CATEGORIES = [
+            {
+                id: 'us',
+                title: '新人甜蜜檔案',
+                subtitle: '關於柏翰 & Lulu 的戀愛日常與小秘密',
+                icon: 'Heart',
+                badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
+                iconBg: 'bg-rose-100 text-rose-600'
+            },
+            {
+                id: 'travel',
+                title: '愛情足跡與夢想',
+                subtitle: '走過的浪漫城市與 2027 夢幻蜜月預告',
+                icon: 'Plane',
+                badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
+                iconBg: 'bg-amber-100 text-amber-600'
+            },
+            {
+                id: 'fun',
+                title: '婚禮冷知識挑戰',
+                subtitle: '90% 賓客都會答錯的趣味禮俗與搶答秘笈',
+                icon: 'GlassWater',
+                badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                iconBg: 'bg-emerald-100 text-emerald-600'
+            },
+            {
+                id: 'all',
+                title: '全題庫隨機實戰',
+                subtitle: '題目與選項全面洗牌！中場活動前終極模擬考',
+                icon: 'Flame',
+                badgeBg: 'bg-purple-50 text-purple-800 border-purple-200',
+                iconBg: 'bg-purple-100 text-purple-600'
+            }
+        ];
+
+        const STORAGE_KEY_QUESTIONS = 'bohan_lulu_wedding_trivia_questions_v1';
+        const STORAGE_KEY_MASTERED = 'bohan_lulu_wedding_trivia_mastered_v1';
+
+        function prepareQuizRound(rawQuestions, shuffleOrder = false) {
+            const list = [...rawQuestions];
+            if (shuffleOrder) {
+                for (let i = list.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [list[i], list[j]] = [list[j], list[i]];
+                }
+            }
+            return list.map((q) => {
+                const optionObjects = q.options.map((text, idx) => ({
+                    text,
+                    isCorrect: idx === q.correctIndex
+                }));
+                for (let i = optionObjects.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [optionObjects[i], optionObjects[j]] = [optionObjects[j], optionObjects[i]];
+                }
+                return {
+                    ...q,
+                    shuffledOptions: optionObjects.map((o) => o.text),
+                    shuffledCorrectIndex: optionObjects.findIndex((o) => o.isCorrect)
+                };
+            });
+        }
+
+        function playSoundEffect(type, enabled) {
+            if (!enabled || typeof window === 'undefined') return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+                if (type === 'correct') {
+                    [523.25, 659.25, 783.99].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.26);
+                    });
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(280, now);
+                    osc.frequency.linearRampToValueAtTime(190, now + 0.25);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'fanfare') {
+                    [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.14, now + idx * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.36);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function App() {
+            const [questions, setQuestions] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY_QUESTIONS);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    }
+                } catch (e) {}
+                return DEFAULT_QUESTIONS;
+            });
+
+            const [masteredIds, setMasteredIds] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY_MASTERED);
+                    if (saved) return JSON.parse(saved);
+                } catch (e) {}
+                return [];
+            });
+
+            const [screen, setScreen] = useState('home');
+            const [activeCategory, setActiveCategory] = useState(null);
+            const [quizList, setQuizList] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [roundHistory, setRoundHistory] = useState([]);
+            const [soundEnabled, setSoundEnabled] = useState(true);
+
+            const [isEditorOpen, setIsEditorOpen] = useState(false);
+            const [editingQuestion, setEditingQuestion] = useState(null);
+            const [toastMessage, setToastMessage] = useState(null);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem(STORAGE_KEY_QUESTIONS, JSON.stringify(questions));
+                } catch (e) {}
+            }, [questions]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem(STORAGE_KEY_MASTERED, JSON.stringify(masteredIds));
+                } catch (e) {}
+            }, [masteredIds]);
+
+            const showToast = (msg) => {
+                setToastMessage(msg);
+                setTimeout(() => {
+                    setToastMessage((prev) => (prev === msg ? null : prev));
+                }, 2600);
+            };
+
+            const startCategoryQuiz = (catId) => {
+                const filtered = catId === 'all' ? questions : questions.filter((q) => q.category === catId);
+                if (filtered.length === 0) {
+                    showToast('此分類目前沒有題目，請先新增題目！');
+                    return;
+                }
+                const prepared = prepareQuizRound(filtered, catId === 'all');
+                setActiveCategory(CATEGORIES.find((c) => c.id === catId));
+                setQuizList(prepared);
+                setCurrentIndex(0);
+                setSelectedOption(null);
+                setRoundHistory([]);
+                setScreen('quiz');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleSelectOption = (optIndex) => {
+                if (selectedOption !== null) return;
+                setSelectedOption(optIndex);
+                const currentQ = quizList[currentIndex];
+                const isCorrect = optIndex === currentQ.shuffledCorrectIndex;
+                if (isCorrect) {
+                    playSoundEffect('correct', soundEnabled);
+                    if (!masteredIds.includes(currentQ.id)) {
+                        setMasteredIds((prev) => [...prev, currentQ.id]);
+                    }
+                } else {
+                    playSoundEffect('wrong', soundEnabled);
+                }
+                setRoundHistory((prev) => [
+                    ...prev,
+                    {
+                        id: currentQ.id,
+                        question: currentQ.question,
+                        selectedText: currentQ.shuffledOptions[optIndex],
+                        correctText: currentQ.shuffledOptions[currentQ.shuffledCorrectIndex],
+                        explanation: currentQ.explanation,
+                        isCorrect
+                    }
+                ]);
+            };
+
+            const handleNextQuestion = () => {
+                if (currentIndex + 1 < quizList.length) {
+                    setCurrentIndex((prev) => prev + 1);
+                    setSelectedOption(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    playSoundEffect('fanfare', soundEnabled);
+                    setScreen('result');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            const masteryStats = useMemo(() => {
+                const total = questions.length;
+                const validMastered = masteredIds.filter((id) => questions.some((q) => q.id === id)).length;
+                const percent = total > 0 ? Math.round((validMastered / total) * 100) : 0;
+                return { total, validMastered, percent };
+            }, [questions, masteredIds]);
+
+            const handleSaveQuestion = (e) => {
+                e.preventDefault();
+                if (!editingQuestion.question.trim()) return;
+                const exists = questions.some((q) => q.id === editingQuestion.id);
+                if (exists) {
+                    setQuestions((prev) => prev.map((q) => (q.id === editingQuestion.id ? editingQuestion : q)));
+                    showToast('✨ 題目已更新！');
+                } else {
+                    setQuestions((prev) => [...prev, editingQuestion]);
+                    showToast('🎉 新題目已加入題庫！');
+                }
+                setEditingQuestion(null);
+            };
+
+            const handleDeleteQuestion = (id) => {
+                if (questions.length <= 1) {
+                    showToast('至少需要保留一題喔！');
+                    return;
+                }
+                setQuestions((prev) => prev.filter((q) => q.id !== id));
+                showToast('題目已刪除');
+            };
+
+            const handleResetDefaultBank = () => {
+                setQuestions(DEFAULT_QUESTIONS);
+                setMasteredIds([]);
+                showToast('已恢復為柏翰 & Lulu 預設 15 題精選題庫！');
+            };
+
+            return (
+                <div className="min-h-[100dvh] text-[#2C2523] flex flex-col justify-between relative overflow-x-hidden">
+                    {/* 背景光暈 */}
+                    <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+                        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gradient-to-br from-[#F4E3D7]/70 to-transparent blur-3xl" />
+                        <div className="absolute top-1/3 -left-24 w-64 h-64 rounded-full bg-gradient-to-tr from-[#FCE8E6]/60 to-transparent blur-3xl" />
+                        <div className="absolute -bottom-20 right-10 w-72 h-72 rounded-full bg-gradient-to-tl from-[#EFE5DC]/80 to-transparent blur-3xl" />
+                    </div>
+
+                    {/* Toast 訊息 */}
+                    {toastMessage && (
+                        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-[#2C2523] text-[#FAF7F2] px-4 py-2.5 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 animate-slide-up">
+                            <Icon.Sparkles className="w-4 h-4 text-[#D4A373]" />
+                            <span>{toastMessage}</span>
+                        </div>
+                    )}
+
+                    <main className="relative z-10 w-full max-w-[480px] mx-auto px-4 pt-4 pb-10 flex-1 flex flex-col">
+                        {/* ================= 首頁 ================= */}
+                        {screen === 'home' && (
+                            <div className="flex-1 flex flex-col justify-between space-y-6 animate-slide-up">
+                                <div className="flex items-center justify-between pt-1">
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 backdrop-blur border border-[#E6DCD2] text-xs font-medium text-[#8C6D53] shadow-sm">
+                                        <Icon.Heart className="w-3.5 h-3.5 text-[#E07A5F]" fill="#E07A5F" />
+                                        <span>WEDDING WARM-UP</span>
+                                    </div>
+                                    <button
+                                        onClick={() => setSoundEnabled(!soundEnabled)}
+                                        aria-label="切換音效"
+                                        className="p-2 rounded-full bg-white/80 backdrop-blur border border-[#E6DCD2] text-[#8C6D53] active:scale-95 transition"
+                                    >
+                                        {soundEnabled ? <Icon.Volume2 className="w-4 h-4" /> : <Icon.VolumeX className="w-4 h-4 opacity-50" />}
+                                    </button>
+                                </div>
+
+                                <div className="relative bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-[#EADFD5] shadow-[0_12px_35px_-12px_rgba(140,109,83,0.18)] text-center overflow-hidden">
+                                    <div className="absolute inset-2.5 rounded-2xl border border-[#D4A373]/30 pointer-events-none" />
+                                    <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-b from-[#FDFBF7] to-[#F5EBE1] border-2 border-[#D4A373]/50 flex flex-col items-center justify-center shadow-inner mb-4 animate-float">
+                                        <span className="font-serif-tc text-xl font-bold tracking-wider text-[#8C6D53]">B &amp; L</span>
+                                        <span className="text-[10px] tracking-widest text-[#B08968] font-semibold">2026.11.22</span>
+                                    </div>
+                                    <h1 className="font-serif-tc text-2xl sm:text-[26px] font-bold text-[#2C2523] tracking-tight">
+                                        柏翰 &amp; Lulu 婚禮快問快答
+                                    </h1>
+                                    <p className="mt-1.5 text-sm font-medium text-[#E07A5F] flex items-center justify-center gap-1">
+                                        <Icon.Sparkles className="w-4 h-4" />
+                                        <span>中場活動暖身練習題庫・先偷看題目拿大獎！</span>
+                                    </p>
+
+                                    <div className="mt-5 bg-[#FAF7F2] rounded-2xl p-3.5 border border-[#EDE3D9] text-left">
+                                        <div className="flex items-center justify-between text-xs mb-1.5">
+                                            <span className="font-semibold text-[#5C4D44] flex items-center gap-1.5">
+                                                <Icon.Trophy className="w-3.5 h-3.5 text-[#D4A373]" />
+                                                你的搶答暖身熟練度
+                                            </span>
+                                            <span className="font-bold text-[#8C6D53]">
+                                                已掌握 {masteryStats.validMastered} / {masteryStats.total} 題 ({masteryStats.percent}%)
+                                            </span>
+                                        </div>
+                                        <div className="w-full h-2.5 bg-[#E9DFD5] rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-[#D4A373] via-[#E07A5F] to-[#F28482] rounded-full transition-all duration-500"
+                                                style={{ width: `${Math.max(masteryStats.percent, 4)}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-[11px] text-[#8C7A6B] mt-1.5">
+                                            {masteryStats.percent === 100 ? '🔥 太強了！所有題目都難不倒你，待會中場大獎穩拿！' : '💡 點選下方任一主題開始練習，每題答完都有趣味詳解喔！'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between px-1">
+                                        <h2 className="font-serif-tc text-base font-bold text-[#3D332E]">選擇暖身題庫主題</h2>
+                                        <span className="text-xs text-[#8C7A6B]">點擊卡片立即開始</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {CATEGORIES.map((cat) => {
+                                            const IconComp = Icon[cat.icon] || Icon.Heart;
+                                            const catQuestions = cat.id === 'all' ? questions : questions.filter((q) => q.category === cat.id);
+                                            const catMasteredCount = catQuestions.filter((q) => masteredIds.includes(q.id)).length;
+                                            return (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => startCategoryQuiz(cat.id)}
+                                                    className="w-full text-left bg-white/95 hover:bg-white active:scale-[0.98] transition-all duration-150 rounded-2xl p-4 border border-[#E6DCD2] shadow-sm hover:shadow-md flex items-center gap-3.5 group"
+                                                >
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${cat.iconBg} shadow-inner`}>
+                                                        <IconComp className="w-6 h-6" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="font-serif-tc font-bold text-base text-[#2C2523] truncate">{cat.title}</h3>
+                                                            <span className={`text-[11px] px-2 py-0.5 rounded-full border font-semibold ${cat.badgeBg}`}>{catQuestions.length} 題</span>
+                                                        </div>
+                                                        <p className="text-xs text-[#7A6B63] mt-0.5 line-clamp-1">{cat.subtitle}</p>
+                                                        <div className="flex items-center gap-2 mt-1.5">
+                                                            <span className="text-[11px] text-[#9A897E]">已解鎖：{catMasteredCount}/{catQuestions.length}</span>
+                                                            {catMasteredCount === catQuestions.length && catQuestions.length > 0 && (
+                                                                <span className="inline-flex items-center gap-0.5 text-[11px] text-emerald-600 font-semibold">
+                                                                    <Icon.CheckCircle2 className="w-3 h-3" /> 已滿分通關
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-8 h-8 rounded-full bg-[#FAF7F2] group-hover:bg-[#F3EAE0] flex items-center justify-center text-[#8C6D53] shrink-0 transition">
+                                                        <Icon.ChevronRight className="w-5 h-5" />
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className="pt-2 flex flex-col items-center gap-2 text-center">
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => setIsEditorOpen(true)}
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium text-[#7A6B63] bg-white/70 hover:bg-white border border-[#E6DCD2] active:scale-95 transition"
+                                        >
+                                            <Icon.Settings className="w-3.5 h-3.5 text-[#8C6D53]" />
+                                            <span>自訂 / 編輯題庫 ({questions.length}題)</span>
+                                        </button>
+                                        {masteredIds.length > 0 && (
+                                            <button
+                                                onClick={() => {
+                                                    setMasteredIds([]);
+                                                    showToast('已重置暖身熟練度紀錄！');
+                                                }}
+                                                className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-medium text-[#9A897E] hover:text-[#5C4D44] active:scale-95 transition"
+                                            >
+                                                <Icon.RefreshCw className="w-3.5 h-3.5" />
+                                                <span>清除紀錄</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-[#A8998E]">Designed with love for Bohan &amp; Lulu • 2026.11.22</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ================= 答題頁面 ================= */}
+                        {screen === 'quiz' && quizList[currentIndex] && (
+                            <div className="flex-1 flex flex-col justify-between space-y-4 animate-slide-up">
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <button
+                                            onClick={() => setScreen('home')}
+                                            className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-white border border-[#E6DCD2] text-xs font-semibold text-[#5C4D44] active:scale-95 transition shadow-sm"
+                                        >
+                                            <Icon.ChevronLeft className="w-4 h-4" />
+                                            <span>返回主題</span>
+                                        </button>
+                                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E6DCD2] text-xs font-semibold text-[#8C6D53] shadow-sm">
+                                            {activeCategory && (
+                                                <>
+                                                    <span className="text-[#E07A5F]">{activeCategory.title}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                        <div className="text-xs font-bold text-[#8C6D53] bg-white px-3 py-1.5 rounded-full border border-[#E6DCD2] shadow-sm">
+                                            {currentIndex + 1} / {quizList.length}
+                                        </div>
+                                    </div>
+                                    <div className="w-full h-2 bg-[#EAE0D5] rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-[#D4A373] to-[#E07A5F] transition-all duration-300 rounded-full"
+                                            style={{ width: `${((currentIndex + 1) / quizList.length) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 flex flex-col justify-start space-y-4">
+                                    <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#E6DCD2] shadow-[0_8px_25px_-8px_rgba(140,109,83,0.14)] relative">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF3EB] text-[#9C6644] border border-[#E6D5C3]">
+                                                <Icon.Sparkles className="w-3 h-3 text-[#D4A373]" />
+                                                {quizList[currentIndex].tag || '婚禮快問快答'}
+                                            </span>
+                                            <span className="text-xs font-medium text-[#A8998E]">Question {currentIndex + 1}</span>
+                                        </div>
+                                        <h2 className="font-serif-tc text-lg sm:text-xl font-bold text-[#2C2523] leading-relaxed">
+                                            {quizList[currentIndex].question}
+                                        </h2>
+                                    </div>
+
+                                    <div className="space-y-2.5">
+                                        {quizList[currentIndex].shuffledOptions.map((optionText, idx) => {
+                                            const letters = ['A', 'B', 'C', 'D'];
+                                            const isAnswered = selectedOption !== null;
+                                            const isThisSelected = selectedOption === idx;
+                                            const isThisCorrect = idx === quizList[currentIndex].shuffledCorrectIndex;
+
+                                            let buttonStyle = 'bg-white border-[#E6DCD2] text-[#2C2523] hover:border-[#D4A373]';
+                                            let badgeStyle = 'bg-[#FAF7F2] text-[#8C6D53] border-[#E6DCD2]';
+
+                                            if (isAnswered) {
+                                                if (isThisCorrect) {
+                                                    buttonStyle = 'bg-emerald-50/90 border-emerald-500 text-emerald-950 ring-2 ring-emerald-500/20 shadow-sm';
+                                                    badgeStyle = 'bg-emerald-600 text-white border-emerald-600';
+                                                } else if (isThisSelected && !isThisCorrect) {
+                                                    buttonStyle = 'bg-rose-50/90 border-rose-400 text-rose-950 ring-2 ring-rose-400/20';
+                                                    badgeStyle = 'bg-rose-500 text-white border-rose-500';
+                                                } else {
+                                                    buttonStyle = 'bg-white/60 border-[#EAE0D5] text-[#9A897E] opacity-65';
+                                                    badgeStyle = 'bg-[#FAF7F2] text-[#B8A99E] border-[#EAE0D5]';
+                                                }
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    disabled={isAnswered}
+                                                    onClick={() => handleSelectOption(idx)}
+                                                    className={`w-full min-h-[56px] p-3.5 rounded-2xl border-2 text-left transition-all duration-150 flex items-center gap-3.5 ${buttonStyle} ${!isAnswered ? 'active:scale-[0.98]' : ''}`}
+                                                >
+                                                    <span className={`w-8 h-8 rounded-xl border text-xs font-bold flex items-center justify-center shrink-0 transition-colors ${badgeStyle}`}>
+                                                        {letters[idx]}
+                                                    </span>
+                                                    <span className="flex-1 text-sm sm:text-base font-medium leading-snug">{optionText}</span>
+                                                    {isAnswered && isThisCorrect && <Icon.CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
+                                                    {isAnswered && isThisSelected && !isThisCorrect && <Icon.XCircle className="w-5 h-5 text-rose-500 shrink-0" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {selectedOption !== null && (
+                                        <div className="animate-slide-up pt-1 space-y-3">
+                                            <div className={`rounded-2xl p-4 border ${selectedOption === quizList[currentIndex].shuffledCorrectIndex ? 'bg-emerald-50/80 border-emerald-200' : 'bg-amber-50/90 border-amber-200'}`}>
+                                                <div className="flex items-center gap-2 mb-1.5">
+                                                    {selectedOption === quizList[currentIndex].shuffledCorrectIndex ? (
+                                                        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-800">
+                                                            🎉 答對了！太了解柏翰 &amp; Lulu 了吧！
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-900">
+                                                            💡 差一點點！快把正確答案記起來待會搶答！
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-xs sm:text-sm text-[#4A3F39] leading-relaxed">{quizList[currentIndex].explanation}</p>
+                                            </div>
+                                            <button
+                                                onClick={handleNextQuestion}
+                                                className="w-full min-h-[54px] rounded-2xl bg-gradient-to-r from-[#8C6D53] via-[#B08968] to-[#D4A373] text-white font-bold text-base shadow-lg shadow-[#D4A373]/25 active:scale-[0.98] transition flex items-center justify-center gap-2"
+                                            >
+                                                <span>{currentIndex + 1 < quizList.length ? '下一題' : '查看暖身成績單 ✨'}</span>
+                                                <Icon.ChevronRight className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ================= 成績結算頁面 ================= */}
+                        {screen === 'result' && (
+                            <div className="flex-1 flex flex-col justify-between space-y-5 animate-slide-up">
+                                {(() => {
+                                    const total = roundHistory.length;
+                                    const correctCount = roundHistory.filter((r) => r.isCorrect).length;
+                                    const score = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+                                    let rankTitle = '🥂 暖身完畢！準備好中場搶答了！';
+                                    let rankDesc = '看過詳解之後印象更深刻，待會正式活動一定能搶進前段班！';
+                                    if (score === 100) {
+                                        rankTitle = '🏆 頭號鐵粉認證！待會大獎非你莫屬！';
+                                        rankDesc = '滿分全對太強啦！記得待會中場快問快答手速要快，把最大獎抱回家！';
+                                    } else if (score >= 80) {
+                                        rankTitle = '✨ 超級好友認證！距離滿分只差一步！';
+                                        rankDesc = '你對柏翰與 Lulu 超級了解，把下面錯的那題偷看一下就無敵了！';
+                                    }
+
+                                    return (
+                                        <>
+                                            <div className="bg-white rounded-3xl p-6 border border-[#E6DCD2] shadow-[0_12px_35px_-12px_rgba(140,109,83,0.18)] text-center relative overflow-hidden">
+                                                <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FAF0E4] to-[#F5DEC6] border border-[#D4A373]/40 flex items-center justify-center text-[#9C6644] mb-3 shadow-inner">
+                                                    <Icon.Award className="w-9 h-9 text-[#D4A373]" />
+                                                </div>
+                                                <span className="text-xs font-bold tracking-widest uppercase text-[#B08968]">{activeCategory?.title || '暖身挑戰'}</span>
+                                                <div className="my-2 flex items-baseline justify-center gap-1">
+                                                    <span className="font-serif-tc text-5xl font-bold text-[#2C2523]">{score}</span>
+                                                    <span className="text-base font-bold text-[#8C6D53]">分 ({correctCount}/{total} 題)</span>
+                                                </div>
+                                                <h2 className="font-serif-tc text-lg font-bold text-[#E07A5F] mt-1">{rankTitle}</h2>
+                                                <p className="text-xs text-[#7A6B63] mt-1.5 leading-relaxed">{rankDesc}</p>
+                                            </div>
+
+                                            <div className="space-y-2.5">
+                                                <h3 className="font-serif-tc text-sm font-bold text-[#5C4D44] px-1 flex items-center justify-between">
+                                                    <span>本輪必考重點速記</span>
+                                                    <span className="text-xs font-normal text-[#8C7A6B]">待會搶答前再瞄一眼</span>
+                                                </h3>
+                                                <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+                                                    {roundHistory.map((item, idx) => (
+                                                        <div key={idx} className="bg-white/95 rounded-2xl p-3.5 border border-[#E6DCD2] text-left space-y-1.5">
+                                                            <div className="flex items-start gap-2">
+                                                                {item.isCorrect ? <Icon.CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" /> : <Icon.XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />}
+                                                                <p className="text-xs sm:text-sm font-bold text-[#2C2523] leading-snug">{idx + 1}. {item.question}</p>
+                                                            </div>
+                                                            <div className="pl-6 text-xs space-y-1">
+                                                                {!item.isCorrect && <p className="text-rose-600 line-through">你的選擇：{item.selectedText}</p>}
+                                                                <p className="text-emerald-700 font-semibold">正解：{item.correctText}</p>
+                                                                <p className="text-[11px] text-[#7A6B63] bg-[#FAF7F2] p-2 rounded-xl border border-[#EFE6DD]">{item.explanation}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 pt-1">
+                                                <button
+                                                    onClick={() => startCategoryQuiz(activeCategory?.id || 'all')}
+                                                    className="min-h-[52px] rounded-2xl bg-white border-2 border-[#D4A373] text-[#8C6D53] font-bold text-sm active:scale-95 transition flex items-center justify-center gap-1.5"
+                                                >
+                                                    <Icon.RotateCcw className="w-4 h-4" />
+                                                    <span>再刷一次本題庫</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => setScreen('home')}
+                                                    className="min-h-[52px] rounded-2xl bg-gradient-to-r from-[#8C6D53] to-[#D4A373] text-white font-bold text-sm shadow-md active:scale-95 transition flex items-center justify-center gap-1.5"
+                                                >
+                                                    <Icon.Home className="w-4 h-4" />
+                                                    <span>挑戰其他主題</span>
+                                                </button>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* ================= 題庫編輯器 Modal ================= */}
+                    {isEditorOpen && (
+                        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <div className="bg-[#FAF7F2] w-full max-w-[480px] max-h-[90dvh] rounded-t-3xl sm:rounded-3xl border border-[#E6DCD2] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
+                                <div className="px-5 py-4 bg-white border-b border-[#E6DCD2] flex items-center justify-between">
+                                    <div>
+                                        <h3 className="font-serif-tc font-bold text-base text-[#2C2523]">⚙️ 婚禮題庫管理編輯器</h3>
+                                        <p className="text-[11px] text-[#8C7A6B]">可自由修改題目、選項與詳解（自動儲存於手機瀏覽器）</p>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setEditingQuestion(null);
+                                            setIsEditorOpen(false);
+                                        }}
+                                        className="px-3 py-1.5 rounded-full bg-[#FAF7F2] border border-[#E6DCD2] text-xs font-bold text-[#5C4D44]"
+                                    >
+                                        完成關閉
+                                    </button>
+                                </div>
+                                <div className="p-4 overflow-y-auto flex-1 space-y-4">
+                                    {editingQuestion ? (
+                                        <form onSubmit={handleSaveQuestion} className="space-y-3 bg-white p-4 rounded-2xl border border-[#E6DCD2]">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-[#8C6D53]">編輯題目內容</span>
+                                                <button type="button" onClick={() => setEditingQuestion(null)} className="text-xs text-[#9A897E] underline">取消返回列表</button>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-[11px] font-semibold text-[#5C4D44] mb-1">所屬分類</label>
+                                                    <select
+                                                        value={editingQuestion.category}
+                                                        onChange={(e) => setEditingQuestion({ ...editingQuestion, category: e.target.value })}
+                                                        className="w-full rounded-xl border border-[#E6DCD2] px-3 py-2 text-xs bg-[#FAF7F2]"
+                                                    >
+                                                        <option value="us">💕 新人甜蜜檔案</option>
+                                                        <option value="travel">✈️ 愛情足跡與夢想</option>
+                                                        <option value="fun">🥂 婚禮冷知識挑戰</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[11px] font-semibold text-[#5C4D44] mb-1">趣味小標籤</label>
+                                                    <input
+                                                        type="text"
+                                                        value={editingQuestion.tag}
+                                                        onChange={(e) => setEditingQuestion({ ...editingQuestion, tag: e.target.value })}
+                                                        placeholder="例：必考送分題"
+                                                        className="w-full rounded-xl border border-[#E6DCD2] px-3 py-2 text-xs bg-[#FAF7F2]"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-[#5C4D44] mb-1">題目敘述</label>
+                                                <textarea
+                                                    rows={2}
+                                                    required
+                                                    value={editingQuestion.question}
+                                                    onChange={(e) => setEditingQuestion({ ...editingQuestion, question: e.target.value })}
+                                                    className="w-full rounded-xl border border-[#E6DCD2] p-2.5 text-xs bg-[#FAF7F2]"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-[11px] font-semibold text-[#5C4D44]">四個選項（點選左側圓鈕設定為「正確答案」）</label>
+                                                {editingQuestion.options.map((opt, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setEditingQuestion({ ...editingQuestion, correctIndex: idx })}
+                                                            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border ${editingQuestion.correctIndex === idx ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-[#FAF7F2] text-[#8C7A6B] border-[#D5C7B8]'}`}
+                                                        >
+                                                            {editingQuestion.correctIndex === idx ? <Icon.Check className="w-3.5 h-3.5" /> : idx + 1}
+                                                        </button>
+                                                        <input
+                                                            type="text"
+                                                            required
+                                                            value={opt}
+                                                            onChange={(e) => {
+                                                                const updated = [...editingQuestion.options];
+                                                                updated[idx] = e.target.value;
+                                                                setEditingQuestion({ ...editingQuestion, options: updated });
+                                                            }}
+                                                            className="flex-1 rounded-xl border border-[#E6DCD2] px-3 py-1.5 text-xs bg-[#FAF7F2]"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-[#5C4D44] mb-1">答題後的趣味詳解</label>
+                                                <textarea
+                                                    rows={3}
+                                                    required
+                                                    value={editingQuestion.explanation}
+                                                    onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
+                                                    className="w-full rounded-xl border border-[#E6DCD2] p-2.5 text-xs bg-[#FAF7F2]"
+                                                />
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                className="w-full py-2.5 rounded-xl bg-[#8C6D53] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow"
+                                            >
+                                                <Icon.Save className="w-4 h-4" />
+                                                <span>儲存這道題目</span>
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <button
+                                                    onClick={() => setEditingQuestion({
+                                                        id: 'custom-' + Date.now(),
+                                                        category: 'us',
+                                                        tag: '專屬加碼題',
+                                                        question: '',
+                                                        options: ['', '', '', ''],
+                                                        correctIndex: 0,
+                                                        explanation: ''
+                                                    })}
+                                                    className="flex-1 py-2.5 px-3 rounded-xl bg-[#8C6D53] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition"
+                                                >
+                                                    <Icon.Plus className="w-4 h-4" />
+                                                    <span>新增一道專屬題目</span>
+                                                </button>
+                                                <button
+                                                    onClick={handleResetDefaultBank}
+                                                    className="py-2.5 px-3 rounded-xl bg-white border border-[#E6DCD2] text-[#7A6B63] text-xs font-medium flex items-center gap-1 active:scale-95 transition"
+                                                >
+                                                    <Icon.RotateCcw className="w-3.5 h-3.5" />
+                                                    <span>重置預設15題</span>
+                                                </button>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {questions.map((q, idx) => (
+                                                    <div key={q.id} className="bg-white p-3 rounded-2xl border border-[#E6DCD2] flex items-start justify-between gap-2">
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex items-center gap-1.5 mb-1">
+                                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF3EB] text-[#8C6D53] font-semibold">
+                                                                    #{idx + 1} • {q.category === 'us' ? '新人檔案' : q.category === 'travel' ? '愛情旅遊' : '婚禮冷知識'}
+                                                                </span>
+                                                                <span className="text-[10px] text-emerald-700 font-medium truncate">正解：{q.options[q.correctIndex]}</span>
+                                                            </div>
+                                                            <p className="text-xs font-bold text-[#2C2523] line-clamp-2">{q.question}</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-1 shrink-0">
+                                                            <button onClick={() => setEditingQuestion(q)} className="p-2 rounded-xl bg-[#FAF7F2] text-[#8C6D53] hover:bg-[#EFE6DD]" aria-label="編輯">
+                                                                <Icon.Edit3 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button onClick={() => handleDeleteQuestion(q.id)} className="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100" aria-label="刪除">
+                                                                <Icon.Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
