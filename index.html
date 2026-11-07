@@ -9,7 +9,7 @@
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <!-- Babel Standalone for JSX compilation in browser -->
+    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -39,9 +39,6 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
-        // ==========================================
-        // SVG Icons 集合 (確保 GitHub Pages 靜態環境免外部依賴)
-        // ==========================================
         const Icon = {
             Heart: ({ className = "w-5 h-5", fill = "none" }) => (
                 <svg className={className} fill={fill} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
@@ -56,7 +53,7 @@
                 <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>
             ),
             Sparkles: ({ className = "w-5 h-5" }) => (
-                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
             ),
             ChevronRight: ({ className = "w-5 h-5" }) => (
                 <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
@@ -94,6 +91,9 @@
             Save: ({ className = "w-5 h-5" }) => (
                 <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
             ),
+            Download: ({ className = "w-5 h-5" }) => (
+                <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+            ),
             Award: ({ className = "w-5 h-5" }) => (
                 <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
             ),
@@ -110,144 +110,6 @@
                 <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
             )
         };
-
-        const DEFAULT_QUESTIONS = [
-            {
-                id: 'us-1',
-                category: 'us',
-                tag: '必考送分題',
-                question: '今天是柏翰與 Lulu 的大喜之日，請問我們的「婚禮紀念日」是哪一天？',
-                options: ['2026 年 11 月 22 日', '2026 年 10 月 10 日', '2026 年 12 月 25 日', '2026 年 05 月 20 日'],
-                correctIndex: 0,
-                explanation: '沒錯！就是今天 2026/11/22（好成雙的好日子 💕）！趕快把這串神聖數字記在心裡，待會中場主持人正式快問快答很可能會考喔！'
-            },
-            {
-                id: 'us-2',
-                category: 'us',
-                tag: '新郎機密',
-                question: '新郎柏翰平時除了疼愛老婆 Lulu 之外，最熱衷研究的「燒腦興趣」是什麼？',
-                options: ['量化交易寫 Python 選股與名錶研究', '烘焙法式馬卡龍與甜點裝飾', '極限高空跳傘與深海衝浪', '古董字畫與紫砂壺鑑賞'],
-                correctIndex: 0,
-                explanation: '標準理工浪漫男！柏翰平時最愛寫 Python 跑量化交易策略抓飆股，還有研究機械名錶工藝（當然，賺來的錢跟時間都優先留給 Lulu ✨）。'
-            },
-            {
-                id: 'us-3',
-                category: 'us',
-                tag: '約會神隊友',
-                question: '平常兩人出門兜風約會時，負責載著 Lulu 到處趴趴走的「愛車小夥伴」是哪一台？',
-                options: ['Volvo XC40', '粉紅敞篷雙人協力車', '皇家黃金南瓜馬車', '拓海的 AE86 送豆腐專車'],
-                correctIndex: 0,
-                explanation: '答案是來自北歐、安全感滿滿的 Volvo XC40！載著最心愛的老婆出遊，安全與舒適絕對是柏翰的第一考量 🚗💨。'
-            },
-            {
-                id: 'us-4',
-                category: 'us',
-                tag: '親友交誼',
-                question: '逢年過節或好友聚會時，新人最喜歡跟親友切磋哪一項「國粹桌遊」來聯絡感情？',
-                options: ['麻將摸兩圈', '遊戲王卡決鬥', '世紀帝國連線對戰', '西洋棋大師賽'],
-                correctIndex: 0,
-                explanation: '國粹麻將摸兩圈是一定要的 🀄！俗話說牌品好人品就好，不過溫馨提醒各位親友：今天新娘最大，待會有人喊胡牌記得先讓新娘胡！'
-            },
-            {
-                id: 'us-5',
-                category: 'us',
-                tag: '新郎手作',
-                question: '為了籌備這場婚禮，新郎柏翰甚至自己動手寫程式做了什麼神祕數位工具？',
-                options: ['婚禮桌次座位安排系統與這個快問快答網頁', '全自動 AI 敬酒機器人', '紅包袋厚度 X 光掃描儀', '賓客今日穿搭顏值偵測器'],
-                correctIndex: 0,
-                explanation: '沒錯！連安排大家今天坐哪一桌的「桌次規劃系統」還有你現在正在滑的「快問快答題庫」，都是新郎注入滿滿愛意親手打造出來的 💻❤️！'
-            },
-            {
-                id: 'travel-1',
-                category: 'travel',
-                tag: '近期足跡',
-                question: '今年（2026年）9月，柏翰與 Lulu 才剛去哪個陽光與海島度假勝地放鬆充電？',
-                options: ['日本沖繩 Okinawa', '韓國濟州島 Jeju', '泰國普吉島 Phuket', '美國夏威夷 Hawaii'],
-                correctIndex: 0,
-                explanation: '今年 9 月兩人剛去日本沖繩自駕看海、吃燒肉！蔚藍的古宇利島海景跟水族館，是婚禮前最棒的放鬆之旅 🌺🌊。'
-            },
-            {
-                id: 'travel-2',
-                category: 'travel',
-                tag: '閃光彈注意',
-                question: '2026年9月去台中度過浪漫週末時，柏翰在台中大遠百準備了什麼閃亮亮的驚喜送給 Lulu？',
-                options: ['Van Cleef & Arpels 梵克雅寶珠寶', '一年份台中太陽餅 VIP 兌換券', '五公升巨無霸珍珠奶茶', '純金打造的迷你麻將組'],
-                correctIndex: 0,
-                explanation: '請戴好墨鏡 😎！那趟台中行除了住李方艾美酒店，柏翰還特別帶 Lulu 去台中大遠百挑選了夢幻的 VCA 梵克雅寶幸運草珠寶，寵妻指數破表！'
-            },
-            {
-                id: 'travel-3',
-                category: 'travel',
-                tag: '戀愛地圖',
-                question: '2026年上半年，兩人的戀愛旅遊足跡還踏過了哪兩座魅力城市？',
-                options: ['上海與澳門', '北京與香港', '東京與大阪', '首爾與釜山'],
-                correctIndex: 0,
-                explanation: '今年 3 月兩人去了繁華的上海看外灘夜景，4 月又飛去澳門享受美食與奢華度假村，每一站都有滿分的甜蜜回憶 ✈️！'
-            },
-            {
-                id: 'travel-4',
-                category: 'travel',
-                tag: '蜜月預告 Pt.1',
-                question: '婚禮結束後，兩人預計在 2027 年 4 月展開夢幻蜜月之旅，第一站會先去哪裡住濱海灣金沙酒店、玩環球影城？',
-                options: ['新加坡 Singapore', '杜拜 Dubai', '洛杉磯 Los Angeles', '法國巴黎 Paris'],
-                correctIndex: 0,
-                explanation: '蜜月第一站就是花園城市「新加坡」🦁！兩人預計入住超人氣的濱海灣金沙酒店無邊際泳池，還要去聖淘沙環球影城大玩特玩！'
-            },
-            {
-                id: 'travel-5',
-                category: 'travel',
-                tag: '蜜月預告 Pt.2',
-                question: '蜜月旅行的重頭戲！離開新加坡後，柏翰與 Lulu 將飛往哪個浪漫國度入住「四晚水上屋」？',
-                options: ['馬爾地夫 Maldives', '大溪地 Tahiti', '帛琉 Palau', '希臘聖托里尼 Santorini'],
-                correctIndex: 0,
-                explanation: '一生必去的夢幻蜜月天花板——馬爾地夫 🏝️！他們將直接入住四晚絕美水上屋，一打開房門就能跳進蒂芬尼藍的大海看魚群！'
-            },
-            {
-                id: 'fun-1',
-                category: 'fun',
-                tag: '西方禮俗',
-                question: '西式婚禮中，新娘為什麼要戴「頭紗（Veil）」？最初的浪漫或趣味起源是什麼？',
-                options: ['象徵純潔，並幫新娘擋住壞運氣與嫉妒眼光', '戶外證婚防曬、防風吹亂髮型', '怕新郎太緊張在紅毯上認錯人', '早起化妝太累，方便偷偷打呵欠不被拍到'],
-                correctIndex: 0,
-                explanation: '古羅馬與歐洲傳統相信，新娘大喜之日太美太幸福，戴上頭紗可以隔絕邪靈與嫉妒的眼光；掀開頭紗則象徵兩人正式結為連理 👰‍♀️✨。'
-            },
-            {
-                id: 'fun-2',
-                category: 'fun',
-                tag: '浪漫傳說',
-                question: '為什麼結婚戒指傳統上要戴在「左手無名指」上？',
-                options: ['古羅馬人相信那裡有一條「愛之靜脈」直通心臟', '因為無名指關節最小，最不容易卡住戒指', '左手比較少拿筷子跟滑鼠，才不會磨損鑽石', '跟朋友猜拳出布的時候比較有氣勢'],
-                correctIndex: 0,
-                explanation: '古羅馬人稱左手無名指的血管為「Vena Amoris（愛之靜脈）」，相信它直接連通心臟，把婚戒戴在這裡代表兩顆心緊緊相連 💍❤️。'
-            },
-            {
-                id: 'fun-3',
-                category: 'fun',
-                tag: '趣味語源',
-                question: '英文中把蜜月稱為「Honeymoon」，為什麼跟「蜂蜜（Honey）」有關？',
-                options: ['古代習俗新婚第一個月每天喝蜂蜜酒，象徵甜蜜多子', '以前歐洲規定度蜜月一定要去參觀養蜂場', '提醒新郎婚後要像工蜂一樣勤勞做家事', '以前結婚時媒人婆會送一整桶野生蜂巢'],
-                correctIndex: 0,
-                explanation: '在古代北歐與歐洲習俗中，新婚夫妻在婚後的第一個月份（Moon）裡，每天都要喝由蜂蜜發酵製成的「蜂蜜酒（Mead）」，祝福生活甜甜蜜蜜 🍯🌙。'
-            },
-            {
-                id: 'fun-4',
-                category: 'fun',
-                tag: '台灣喜宴',
-                question: '台灣婚宴菜色常有「紅白小湯圓（花好月圓）」，裡面加花生粉除了好吃還代表什麼吉祥寓意？',
-                options: ['圓圓滿滿、早生貴子（好事發生）', '怕賓客前菜沒吃飽，先用糯米墊墊肚子', '讓主廚展現炸湯圓不爆開的深厚功力', '考驗同桌賓客用筷子夾圓形食物的默契'],
-                correctIndex: 0,
-                explanation: '紅白湯圓代表「花好月圓、團團圓圓」，而花生則取諧音「好事發生」與「早生貴子」，吃甜甜沾喜氣，祝福新人幸福美滿 🥣🌸！'
-            },
-            {
-                id: 'fun-5',
-                category: 'fun',
-                tag: '得獎攻略',
-                question: '待會婚禮中場「正式快問快答」開始時，怎樣才能大幅提高搶答拿大獎的機率？',
-                options: ['把這個暖身題庫全部刷滿 100 分，並確保手機網路順暢！', '站在椅子上用力揮舞紅包袋吸引主持人注意', '用炸湯圓賄賂隔壁桌的小朋友幫你按手機', '每隔三分鐘對著主桌大喊新郎最帥、新娘最美'],
-                correctIndex: 0,
-                explanation: '恭喜你掌握精髓了 🎉！雖然大喊新郎最帥、新娘最美會獲得新人燦爛的微笑，但把這 15 題刷熟才是待會秒殺全場、抱走大獎的終極秘訣！'
-            }
-        ];
 
         const CATEGORIES = [
             {
@@ -284,7 +146,6 @@
             }
         ];
 
-        const STORAGE_KEY_QUESTIONS = 'bohan_lulu_wedding_trivia_questions_v1';
         const STORAGE_KEY_MASTERED = 'bohan_lulu_wedding_trivia_mastered_v1';
 
         function prepareQuizRound(rawQuestions, shuffleOrder = false) {
@@ -362,16 +223,9 @@
         }
 
         function App() {
-            const [questions, setQuestions] = useState(() => {
-                try {
-                    const saved = localStorage.getItem(STORAGE_KEY_QUESTIONS);
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
-                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-                    }
-                } catch (e) {}
-                return DEFAULT_QUESTIONS;
-            });
+            const [questions, setQuestions] = useState([]);
+            const [isLoading, setIsLoading] = useState(true);
+            const [loadError, setLoadError] = useState(null);
 
             const [masteredIds, setMasteredIds] = useState(() => {
                 try {
@@ -393,11 +247,27 @@
             const [editingQuestion, setEditingQuestion] = useState(null);
             const [toastMessage, setToastMessage] = useState(null);
 
+            // Fetch external questions.json on mount
             useEffect(() => {
-                try {
-                    localStorage.setItem(STORAGE_KEY_QUESTIONS, JSON.stringify(questions));
-                } catch (e) {}
-            }, [questions]);
+                fetch('questions.json')
+                    .then((res) => {
+                        if (!res.ok) throw new Error('無法載入 questions.json 檔案');
+                        return res.json();
+                    })
+                    .then((data) => {
+                        if (Array.isArray(data)) {
+                            setQuestions(data);
+                        } else {
+                            throw new Error('questions.json 格式錯誤');
+                        }
+                        setIsLoading(false);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        setLoadError(err.message);
+                        setIsLoading(false);
+                    });
+            }, []);
 
             useEffect(() => {
                 try {
@@ -496,11 +366,39 @@
                 showToast('題目已刪除');
             };
 
-            const handleResetDefaultBank = () => {
-                setQuestions(DEFAULT_QUESTIONS);
-                setMasteredIds([]);
-                showToast('已恢復為柏翰 & Lulu 預設 15 題精選題庫！');
+            // 下載更新後的 questions.json 檔案
+            const handleDownloadJSON = () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", "questions.json");
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+                showToast('📥 成功下載更新後的 questions.json！');
             };
+
+            if (isLoading) {
+                return (
+                    <div className="min-h-[100dvh] flex flex-col items-center justify-center p-6 text-center">
+                        <div className="w-12 h-12 rounded-full border-4 border-[#D4A373] border-t-transparent animate-spin mb-4" />
+                        <h2 className="font-serif-tc text-lg font-bold text-[#2C2523]">正在載入柏翰 &amp; Lulu 婚禮題庫...</h2>
+                    </div>
+                );
+            }
+
+            if (loadError) {
+                return (
+                    <div className="min-h-[100dvh] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                        <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-bold">!</div>
+                        <h2 className="font-serif-tc text-xl font-bold text-[#2C2523]">無法載入題庫資料</h2>
+                        <p className="text-xs text-rose-600 max-w-xs">{loadError}</p>
+                        <p className="text-xs text-[#7A6B63] max-w-xs">
+                            提示：若您在本地端直接雙擊開啟 index.html，瀏覽器安全政策會阻擋 fetch 讀取本地 JSON。建議透過 GitHub Pages 瀏覽，或使用本地簡單伺服器 (如 VS Code Live Server)。
+                        </p>
+                    </div>
+                );
+            }
 
             return (
                 <div className="min-h-[100dvh] text-[#2C2523] flex flex-col justify-between relative overflow-x-hidden">
@@ -620,10 +518,10 @@
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick={() => setIsEditorOpen(true)}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium text-[#7A6B63] bg-white/70 hover:bg-white border border-[#E6DCD2] active:scale-95 transition"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium text-[#7A6B63] bg-white/70 hover:bg-white border border-[#E6DCD2] active:scale-95 transition shadow-sm"
                                         >
                                             <Icon.Settings className="w-3.5 h-3.5 text-[#8C6D53]" />
-                                            <span>自訂 / 編輯題庫 ({questions.length}題)</span>
+                                            <span>題庫編輯與下載 ({questions.length}題)</span>
                                         </button>
                                         {masteredIds.length > 0 && (
                                             <button
@@ -835,14 +733,14 @@
                         )}
                     </main>
 
-                    {/* ================= 題庫編輯器 Modal ================= */}
+                    {/* ================= 題庫編輯與下載 Modal ================= */}
                     {isEditorOpen && (
                         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <div className="bg-[#FAF7F2] w-full max-w-[480px] max-h-[90dvh] rounded-t-3xl sm:rounded-3xl border border-[#E6DCD2] shadow-2xl flex flex-col overflow-hidden animate-slide-up">
                                 <div className="px-5 py-4 bg-white border-b border-[#E6DCD2] flex items-center justify-between">
                                     <div>
-                                        <h3 className="font-serif-tc font-bold text-base text-[#2C2523]">⚙️ 婚禮題庫管理編輯器</h3>
-                                        <p className="text-[11px] text-[#8C7A6B]">可自由修改題目、選項與詳解（自動儲存於手機瀏覽器）</p>
+                                        <h3 className="font-serif-tc font-bold text-base text-[#2C2523]">⚙️ 題庫編輯與 JSON 下載</h3>
+                                        <p className="text-[11px] text-[#8C7A6B]">修改後可點擊下方下載更新檔覆蓋專案中的 questions.json</p>
                                     </div>
                                     <button
                                         onClick={() => {
@@ -940,7 +838,15 @@
                                         </form>
                                     ) : (
                                         <>
-                                            <div className="flex items-center justify-between gap-2">
+                                            <div className="space-y-2">
+                                                <button
+                                                    onClick={handleDownloadJSON}
+                                                    className="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
+                                                >
+                                                    <Icon.Download className="w-4 h-4" />
+                                                    <span>下載更新後的 questions.json 檔</span>
+                                                </button>
+
                                                 <button
                                                     onClick={() => setEditingQuestion({
                                                         id: 'custom-' + Date.now(),
@@ -951,20 +857,14 @@
                                                         correctIndex: 0,
                                                         explanation: ''
                                                     })}
-                                                    className="flex-1 py-2.5 px-3 rounded-xl bg-[#8C6D53] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition"
+                                                    className="w-full py-2.5 px-3 rounded-xl bg-[#8C6D53] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition"
                                                 >
                                                     <Icon.Plus className="w-4 h-4" />
-                                                    <span>新增一道專屬題目</span>
-                                                </button>
-                                                <button
-                                                    onClick={handleResetDefaultBank}
-                                                    className="py-2.5 px-3 rounded-xl bg-white border border-[#E6DCD2] text-[#7A6B63] text-xs font-medium flex items-center gap-1 active:scale-95 transition"
-                                                >
-                                                    <Icon.RotateCcw className="w-3.5 h-3.5" />
-                                                    <span>重置預設15題</span>
+                                                    <span>新增一道題目</span>
                                                 </button>
                                             </div>
-                                            <div className="space-y-2">
+
+                                            <div className="space-y-2 pt-2">
                                                 {questions.map((q, idx) => (
                                                     <div key={q.id} className="bg-white p-3 rounded-2xl border border-[#E6DCD2] flex items-start justify-between gap-2">
                                                         <div className="min-w-0 flex-1">
