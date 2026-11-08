@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>婚禮快問快答・中場活動暖身</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Serif TC', sans-serif;
+      background-color: #FDFBF7;
+      color: #2C2A29;
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body class="bg-[#FDFBF7] min-h-[100dvh] flex flex-col">
+  <div id="root" class="flex-1 flex flex-col"></div>
+
+  <!-- 載入外部題庫檔案 (請確認檔名為 questions.js) -->
+  <script src="./questions.js"></script>
+
+  <!-- React 應用程式碼 -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const CATEGORIES = [
+      { id: 'all', name: '🔥 全題庫隨機實戰', desc: '綜合所有題目，考驗你對新人的熟悉度！', icon: '🌟', color: 'from-amber-500 to-yellow-600' },
+      { id: 'groom', name: '🤵 關於新郎', desc: '新郎的小秘密、怪癖與個人特色', icon: '🎩', color: 'from-sky-500 to-blue-600' },
+      { id: 'bride', name: '👰 關於新娘', desc: '新娘的最愛、習慣與迷人特質', icon: '💐', color: 'from-rose-400 to-pink-500' },
+      { id: 'couple', name: '💍 關於我們', desc: '相識戀愛史、默契考驗與甜蜜日常', icon: '🥂', color: 'from-purple-400 to-indigo-500' },
+      { id: 'work', name: '💼 關於工作', desc: '職場日常、職業甘苦談與工作專屬冷知識', icon: '💻', color: 'from-emerald-400 to-teal-500' },
+      { id: 'other', name: '🎯 其他趣味', desc: '婚禮冷知識與現場驚喜雜項', icon: '💡', color: 'from-stone-400 to-stone-600' },
+    ];
+
+    function App() {
+      const [questions, setQuestions] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      const [currentView, setCurrentView] = useState('home');
+      const [selectedCategory, setSelectedCategory] = useState(null);
+      const [activeQuestions, setActiveQuestions] = useState([]);
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [score, setScore] = useState(0);
+      const [streak, setStreak] = useState(0);
+      const [selectedOption, setSelectedOption] = useState(null);
+      const [isAnswered, setIsAnswered] = useState(false);
+      const [quizCompleted, setQuizCompleted] = useState(false);
+
+      useEffect(() => {
+        try {
+          if (window.WEDDING_QUESTIONS && Array.isArray(window.WEDDING_QUESTIONS)) {
+            setQuestions(window.WEDDING_QUESTIONS);
+            setLoading(false);
+          } else {
+            throw new Error('找不到題庫變數 window.WEDDING_QUESTIONS，請確認 questions.js 是否正確載入。');
+          }
+        } catch (err) {
+          setError(err.message);
+          setLoading(false);
+        }
+      }, []);
+
+      const startQuiz = (catId) => {
+        let pool = [...questions];
+        if (catId !== 'all') {
+          pool = pool.filter(q => q.category === catId);
+        }
+        if (pool.length === 0) {
+          alert('這個分類目前還沒有題目喔！請先至管理頁面新增題目。');
+          return;
+        }
+        pool.sort(() => Math.random() - 0.5);
+        setActiveQuestions(pool);
+        setSelectedCategory(catId);
+        setCurrentIndex(0);
+        setScore(0);
+        setStreak(0);
+        setSelectedOption(null);
+        setIsAnswered(false);
+        setQuizCompleted(false);
+        setCurrentView('quiz');
+      };
+
+      const handleSelectOption = (idx) => {
+        if (isAnswered) return;
+        setSelectedOption(idx);
+        setIsAnswered(true);
+
+        const currentQ = activeQuestions[currentIndex];
+        const correct = idx === currentQ.answer;
+
+        if (correct) {
+          setScore(prev => prev + 10);
+          setStreak(prev => prev + 1);
+        } else {
+          setStreak(0);
+        }
+      };
+
+      const handleNext = () => {
+        if (currentIndex + 1 < activeQuestions.length) {
+          setCurrentIndex(prev => prev + 1);
+          setSelectedOption(null);
+          setIsAnswered(false);
+        } else {
+          setQuizCompleted(true);
+        }
+      };
+
+      if (loading) {
+        return (
+          <div className="flex-1 flex items-center justify-center p-6 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+            <p className="text-stone-600 text-lg">正在載入婚禮快問快答題庫...</p>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto">
+            <div className="bg-rose-100 text-rose-600 p-4 rounded-full text-3xl mb-4">⚠️</div>
+            <h2 className="text-xl font-bold text-stone-800 mb-2">無法載入題庫資料</h2>
+            <p className="text-stone-600 text-sm mb-6 bg-white p-4 rounded-xl border border-stone-200 shadow-sm">{error}</p>
+            <button onClick={() => window.location.reload()} className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-3 rounded-xl shadow transition">
+              重新整理頁面
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full p-4 md:p-6">
+          <header className="flex items-center justify-between py-3 mb-4 border-b border-stone-200">
+            <button 
+              onClick={() => setCurrentView('home')} 
+              className="flex items-center space-x-2 text-stone-700 hover:text-amber-700 transition font-medium text-sm"
+            >
+              <span className="text-lg">💍</span>
+              <span className="tracking-wider font-serif">婚禮快問快答・暖身專區</span>
+            </button>
+            {currentView === 'home' && (
+              <button 
+                onClick={() => setCurrentView('admin')}
+                className="bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1"
+              >
+                <span>⚙️</span>
+                <span>管理題庫</span>
+              </button>
+            )}
+            {currentView === 'quiz' && (
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="text-stone-500 hover:text-stone-800 text-xs font-medium"
+              >
+                放棄返回首頁
+              </button>
+            )}
+            {currentView === 'admin' && (
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
+              >
+                返回首頁
+              </button>
+            )}
+          </header>
+
+          {currentView === 'home' && (
+            <main className="flex-1 flex flex-col space-y-6 animate-fadeIn pb-8">
+              <div className="text-center bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 rounded-3xl p-6 shadow-sm">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center mx-auto mb-3 text-3xl">
+                  🥂
+                </div>
+                <h1 className="text-2xl font-bold font-serif text-stone-800 mb-2">中場快問快答・暖身挑戰賽</h1>
+                <p className="text-stone-600 text-sm leading-relaxed max-w-xs mx-auto">
+                  歡迎來到婚宴現場！先來考驗你對新人與彼此日常的了解程度吧！
+                </p>
+                <div className="mt-4 inline-flex items-center space-x-2 bg-white/80 border border-amber-200 px-3 py-1 rounded-full text-xs text-amber-800 font-medium">
+                  <span>✨ 目前題庫總數：{questions.length} 題</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wider px-1">選擇挑戰主題</h2>
+                {CATEGORIES.map(cat => {
+                  const count = cat.id === 'all' ? questions.length : questions.filter(q => q.category === cat.id).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => startQuiz(cat.id)}
+                      className="w-full text-left bg-white hover:bg-stone-50 border border-stone-200/80 hover:border-amber-300 rounded-2xl p-4 shadow-sm hover:shadow transition flex items-center justify-between group"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-2xl shadow-sm text-white flex-shrink-0 group-hover:scale-105 transition`}>
+                          {cat.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-stone-800 text-base group-hover:text-amber-700 transition">{cat.name}</h3>
+                          <p className="text-stone-500 text-xs mt-0.5">{cat.desc}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end flex-shrink-0 ml-2">
+                        <span className="text-xs bg-stone-100 text-stone-600 px-2 py-1 rounded-lg font-medium">{count} 題</span>
+                        <span className="text-amber-600 text-sm font-bold mt-1 group-hover:translate-x-1 transition">➔</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2 text-center">
+                <p className="text-xs text-stone-400">手機 Chrome / Safari 最佳化支援・祝各位賓客搶答奪冠！</p>
+              </div>
+            </main>
+          )}
+
+          {currentView === 'quiz' && !quizCompleted && activeQuestions.length > 0 && (
+            <div className="flex-1 flex flex-col justify-between animate-fadeIn pb-6">
+              <div>
+                <div className="flex items-center justify-between mb-4 bg-stone-100 px-4 py-2.5 rounded-2xl text-xs font-medium text-stone-600">
+                  <div className="flex items-center space-x-2">
+                    <span className="bg-amber-600 text-white px-2 py-0.5 rounded-md font-bold">
+                      {currentIndex + 1} / {activeQuestions.length}
+                    </span>
+                    <span>{CATEGORIES.find(c => c.id === selectedCategory)?.name || '隨機題庫'}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    {streak > 1 && (
+                      <span className="text-rose-600 font-bold animate-pulse">🔥 連續答對 {streak} 題</span>
+                    )}
+                    <span className="font-bold text-amber-700">得分：{score}</span>
+                  </div>
+                </div>
+
+                <div className="w-full bg-stone-200 h-1.5 rounded-full mb-6 overflow-hidden">
+                  <div 
+                    className="bg-amber-600 h-full transition-all duration-300 rounded-full"
+                    style={{ width: `${((currentIndex + 1) / activeQuestions.length) * 100}%` }}
+                  ></div>
+                </div>
+
+                <div className="bg-white border border-stone-200/80 rounded-3xl p-5 md:p-6 shadow-sm mb-6">
+                  <h2 className="text-lg md:text-xl font-bold font-serif text-stone-800 leading-snug">
+                    {activeQuestions[currentIndex].question}
+                  </h2>
+                </div>
+
+                <div className="space-y-3">
+                  {activeQuestions[currentIndex].options.map((option, idx) => {
+                    const currentQ = activeQuestions[currentIndex];
+                    let btnStyle = "bg-white border-stone-200 hover:border-amber-400 text-stone-700";
+                    
+                    if (isAnswered) {
+                      if (idx === currentQ.answer) {
+                        btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-sm";
+                      } else if (idx === selectedOption) {
+                        btnStyle = "bg-rose-50 border-rose-400 text-rose-800 font-bold";
+                      } else {
+                        btnStyle = "bg-stone-50 border-stone-200 text-stone-400 opacity-60";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectOption(idx)}
+                        disabled={isAnswered}
+                        className={`w-full text-left p-4 rounded-2xl border-2 transition-all text-sm md:text-base flex items-center justify-between ${btnStyle}`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+                            isAnswered && idx === currentQ.answer 
+                              ? 'bg-emerald-500 text-white' 
+                              : isAnswered && idx === selectedOption 
+                              ? 'bg-rose-500 text-white' 
+                              : 'bg-stone-100 text-stone-600'
+                          }`}>
+                            {['A', 'B', 'C', 'D'][idx]}
+                          </span>
+                          <span>{option}</span>
+                        </div>
+                        {isAnswered && idx === currentQ.answer && (
+                          <span className="text-emerald-600 font-bold text-sm">✓ 正確</span>
+                        )}
+                        {isAnswered && idx === selectedOption && idx !== currentQ.answer && (
+                          <span className="text-rose-600 font-bold text-sm">✗ 錯了</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {isAnswered && (
+                <div className="mt-6 bg-amber-50/80 border border-amber-200 rounded-2xl p-4 animate-slideUp">
+                  <div className="flex items-center space-x-2 mb-1.5">
+                    <span className="text-base">💡</span>
+                    <h3 className="font-bold text-amber-900 text-sm">趣味詳解</h3>
+                  </div>
+                  <p className="text-stone-700 text-xs md:text-sm leading-relaxed mb-4">
+                    {activeQuestions[currentIndex].explanation}
+                  </p>
+                  <button
+                    onClick={handleNext}
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 px-6 rounded-xl shadow transition flex items-center justify-center space-x-2 text-base"
+                  >
+                    <span>{currentIndex + 1 < activeQuestions.length ? '下一題' : '查看最終成績'}</span>
+                    <span>➔</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {currentView === 'quiz' && quizCompleted && (
+            <div className="flex-1 flex flex-col justify-center items-center text-center py-8 animate-fadeIn">
+              <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-3xl flex items-center justify-center text-4xl mb-4 shadow-sm">
+                🏆
+              </div>
+              <h2 className="text-2xl font-bold font-serif text-stone-800 mb-1">挑戰完成！</h2>
+              <p className="text-stone-500 text-sm mb-6">看來你對新人的了解程度相當驚人！</p>
+
+              <div className="bg-white border border-stone-200 rounded-3xl p-6 w-full max-w-xs shadow-sm mb-6 space-y-3">
+                <div className="text-stone-500 text-xs uppercase tracking-wider font-semibold">最終總得分</div>
+                <div className="text-4xl font-extrabold text-amber-700">{score} <span className="text-base font-normal text-stone-500">分</span></div>
+                <div className="pt-3 border-t border-stone-100 flex justify-around text-xs text-stone-600">
+                  <div>答對題數：<span className="font-bold text-stone-800">{Math.round(score/10)} / {activeQuestions.length}</span></div>
+                </div>
+              </div>
+
+              <div className="space-y-3 w-full max-w-xs">
+                <button
+                  onClick={() => startQuiz(selectedCategory)}
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 px-6 rounded-xl shadow transition text-sm"
+                >
+                  再挑戰一次這個主題
+                </button>
+                <button
+                  onClick={() => setCurrentView('home')}
+                  className="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium py-3.5 px-6 rounded-xl transition text-sm"
+                >
+                  返回首頁選單
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentView === 'admin' && (
+            <div className="flex-1 flex flex-col space-y-4 animate-fadeIn pb-8">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <h2 className="font-bold text-amber-900 text-base mb-1">⚙️ 題庫管理與自訂</h2>
+                <p className="text-amber-800 text-xs leading-relaxed">
+                  您可以在這裡檢視現有題目。若要永久保存修改，請直接編輯 <code>questions.js</code> 檔案，或使用下方表單暫時新增測試。
+                </p>
+              </div>
+
+              <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <h3 className="font-bold text-stone-800 text-sm">快速新增題目</h3>
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <label className="text-stone-600 font-medium">所屬分類</label>
+                    <select id="new-cat" className="w-full mt-1 p-2 bg-stone-50 border border-stone-200 rounded-lg">
+                      <option value="groom">🤵 關於新郎 (groom)</option>
+                      <option value="bride">👰 關於新娘 (bride)</option>
+                      <option value="couple">💍 關於我們 (couple)</option>
+                      <option value="work">💼 關於工作 (work)</option>
+                      <option value="other">🎯 其他趣味 (other)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-stone-600 font-medium">題目內容</label>
+                    <input id="new-q" type="text" placeholder="例如：新郎最喜歡吃的食物是？" className="w-full mt-1 p-2 bg-stone-50 border border-stone-200 rounded-lg" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input id="opt-0" type="text" placeholder="選項 A" className="p-2 bg-stone-50 border border-stone-200 rounded-lg" />
+                    <input id="opt-1" type="text" placeholder="選項 B" className="p-2 bg-stone-50 border border-stone-200 rounded-lg" />
+                    <input id="opt-2" type="text" placeholder="選項 C" className="p-2 bg-stone-50 border border-stone-200 rounded-lg" />
+                    <input id="opt-3" type="text" placeholder="選項 D" className="p-2 bg-stone-50 border border-stone-200 rounded-lg" />
+                  </div>
+                  <div>
+                    <label className="text-stone-600 font-medium">正確答案 (0=A, 1=B, 2=C, 3=D)</label>
+                    <select id="new-ans" className="w-full mt-1 p-2 bg-stone-50 border border-stone-200 rounded-lg">
+                      <option value="0">選項 A</option>
+                      <option value="1">選項 B</option>
+                      <option value="2">選項 C</option>
+                      <option value="3">選項 D</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-stone-600 font-medium">趣味詳解說明</label>
+                    <textarea id="new-exp" placeholder="請輸入答題後的詳細說明..." className="w-full mt-1 p-2 bg-stone-50 border border-stone-200 rounded-lg h-16"></textarea>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      const cat = document.getElementById('new-cat').value;
+                      const q = document.getElementById('new-q').value;
+                      const o0 = document.getElementById('opt-0').value;
+                      const o1 = document.getElementById('opt-1').value;
+                      const o2 = document.getElementById('opt-2').value;
+                      const o3 = document.getElementById('opt-3').value;
+                      const ans = parseInt(document.getElementById('new-ans').value);
+                      const exp = document.getElementById('new-exp').value;
+
+                      if (!q || !o0 || !o1 || !o2 || !o3 || !exp) {
+                        alert('請完整填寫所有欄位！');
+                        return;
+                      }
+
+                      const newQObj = {
+                        id: questions.length + 1,
+                        category: cat,
+                        question: q,
+                        options: [o0, o1, o2, o3],
+                        answer: ans,
+                        explanation: exp
+                      };
+
+                      const updated = [newQObj, ...questions];
+                      setQuestions(updated);
+                      alert('已成功新增題目到當前暫存！');
+                      document.getElementById('new-q').value = '';
+                      document.getElementById('opt-0').value = '';
+                      document.getElementById('opt-1').value = '';
+                      document.getElementById('opt-2').value = '';
+                      document.getElementById('opt-3').value = '';
+                      document.getElementById('new-exp').value = '';
+                    }}
+                    className="w-full bg-stone-800 hover:bg-stone-900 text-white font-medium py-2.5 rounded-xl transition mt-2"
+                  >
+                    立即新增題目
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-bold text-stone-800 text-sm px-1">現有題目列表 ({questions.length} 題)</h3>
+                {questions.map((q, i) => (
+                  <div key={q.id || i} className="bg-white border border-stone-200 rounded-xl p-3 text-xs flex items-center justify-between shadow-sm">
+                    <div className="truncate pr-2">
+                      <span className="font-bold text-amber-700 mr-2">#{i+1}</span>
+                      <span className="text-stone-500 mr-2">[{q.category}]</span>
+                      <span className="text-stone-800 font-medium">{q.question}</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (confirm(`確定要刪除第 ${i+1} 題嗎？`)) {
+                          const updated = questions.filter((_, idx) => idx !== i);
+                          setQuestions(updated);
+                        }
+                      }}
+                      className="text-rose-500 hover:text-rose-700 font-medium px-2 py-1 flex-shrink-0"
+                    >
+                      刪除
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
